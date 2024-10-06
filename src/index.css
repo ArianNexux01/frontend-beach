@@ -1,0 +1,59 @@
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
+}
+input[data-autocompleted] {
+  background-color: transparent !important;
+}
+
+.css-16g9c80-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled {
+  color: black !important;
+}
+input {
+    font: inherit;
+    letter-spacing: inherit;
+    color: currentColor;
+    padding: 4px 0 5px;
+    border: 0.5px solid grey;
+    border-radius: 5px;
+    box-sizing: content-box;
+    background: white;
+    height: 1.4375em;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    display: block;
+    min-width: 0;
+    width: 100%;
+    -webkit-animation-name: mui-auto-fill-cancel;
+    animation-name: mui-auto-fill-cancel;
+    -webkit-animation-duration: 10ms;
+    animation-duration: 10ms;
+    height: 1.375rem;
+    padding-top: 12px;
+    padding-right: 1px;
+    padding-bottom: 12px;
+    margin: 0;
+    padding: 16.5px 14px;
+    height: 1.375rem;
+    padding-top: 12px;
+    padding-right: 1px;
+    padding-bottom: 12px;
+}
+
+.css-wnm90q-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled {
+
+  -webkit-text-fill-color: #5a5a5a !important;
+}
+
+.error-message {
+  color: rgb(252, 113, 113);
+  margin-top: 5px;
+}
+
+input:disabled {
+  border: 0.5px solid rgb(223, 220, 220);
+  color: rgb(143, 139, 139);
+
+}
