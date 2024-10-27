@@ -3,7 +3,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import Swal from 'sweetalert2';
 
 import api from 'api/axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 type Inputs = {
   name: string;
   username: string;
@@ -19,19 +20,45 @@ const CreateUsersPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Inputs>();
+  const { id } = useParams();
+  const getData = async () => {
+    const responseUser = await api.get(`/user/${id}`);
+
+    if (id !== undefined) {
+      setValue('username', responseUser.data.username);
+      setValue('phone', responseUser.data.phone);
+      setValue('name', responseUser.data.name);
+      setValue('role', responseUser.data.role);
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     try {
-      const response = await api.post('/user/register', data);
-
-      if (response.status === 201) {
+      let response;
+      let message;
+      if (id === undefined) {
+        response = await api.post('/user/register', data);
+        message = 'Usuário cadastrado com sucesso!';
+      } else {
+        response = await api.put(`/user/${id}`, {
+          name: data.name,
+          username: data.username,
+          phone: data.phone,
+          role: data.role,
+        });
+        message = 'Usuário actualizado com sucesso!';
+      }
+      if (response.status === 200 || response.status === 201) {
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Usuário cadastrado com sucesso!',
+          title: message,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -106,19 +133,21 @@ const CreateUsersPage = () => {
             {errors.role && <span className="error-message">Campo obrigatório</span>}
           </Box>
 
-          <Box marginTop={5}>
-            <label>Senha</label>
-            <input
-              {...register('password', { required: true })}
-              style={inputStyle}
-              type="password"
-              id="outlined-basic"
-            />
-            {errors.password && <span className="error-message">Campo obrigatório</span>}
-          </Box>
+          {id === undefined && (
+            <Box marginTop={5}>
+              <label>Senha</label>
+              <input
+                {...register('password', { required: true })}
+                style={inputStyle}
+                type="password"
+                id="outlined-basic"
+              />
+              {errors.password && <span className="error-message">Campo obrigatório</span>}
+            </Box>
+          )}
           <Box marginTop={5}>
             <Button type="submit" variant="outlined">
-              Adicionar
+              {id === undefined ? 'Adicionar' : 'Actualizar'}
             </Button>
           </Box>
         </Box>

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 const EntrancesPage = () => {
   const [entrances, setEntrances] = useState([]);
   const getData = async () => {
-    const response = await api.get('/entrances');
+    const response = await api.get(`/entrances?verified=true`);
     if (response.status === 200) {
       setEntrances(response.data);
     }

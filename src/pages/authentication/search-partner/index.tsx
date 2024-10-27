@@ -5,6 +5,7 @@ import ForgotPasswordForm from 'components/sections/authentication/ForgotPasswor
 import { useState } from 'react';
 import Table from 'components/sections/dashboard/transactions/Table';
 import { useNavigate } from 'react-router-dom';
+import StatisticsCards from 'components/sections/dashboard/statistics/StatisticCards';
 
 const SearchPartnersPage = () => {
   const [partners, setPartners] = useState([]);
@@ -14,7 +15,7 @@ const SearchPartnersPage = () => {
   const navigate = useNavigate();
 
   const getData = async (data: string) => {
-    const response = await api.get('/partner/search/' + data);
+    const response = await api.get(`/partner/search-by-state/${data}?isActive=true`);
     if (response.status === 200) {
       setPartners(response.data);
     }
@@ -46,14 +47,8 @@ const SearchPartnersPage = () => {
   return (
     <Box mt={5}>
       <Grid container spacing={1} justifyContent="center" alignItems="center" mb={10}>
-        <Grid item xs={12} sm={9}>
-          <Button
-            sx={{ marginBottom: 5, width: '100%', color: '#c2b067' }}
-            onClick={handleNavigateToEntryGuest}
-            variant="outlined"
-          >
-            Entrada de Não Sócio
-          </Button>
+        <StatisticsCards />
+        <Grid item mt={8} xs={12} sm={9}>
           <Typography
             variant="h1"
             sx={{
@@ -70,6 +65,13 @@ const SearchPartnersPage = () => {
           </Typography>
 
           <ForgotPasswordForm getData={getData} />
+          <Button
+            sx={{ marginBottom: 2, width: '100%', color: '#c2b067' }}
+            onClick={handleNavigateToEntryGuest}
+            variant="outlined"
+          >
+            Entrada de Não Sócio
+          </Button>
         </Grid>
         <Grid item xs={12} sm={9}>
           <Table

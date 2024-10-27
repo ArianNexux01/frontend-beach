@@ -43,6 +43,7 @@ const StatisticsCardItem = ({ cardData, index }: StatisticsCardProps) => {
           sx={{
             p: 5,
             flexGrow: 4,
+            height: '150px',
           }}
         >
           <Grid container alignItems="center" spacing={1}>

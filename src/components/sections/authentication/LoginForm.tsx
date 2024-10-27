@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import axios from 'axios';
+import { environment } from 'config/environment';
 
 type Inputs = {
   username: string;
@@ -45,8 +46,7 @@ const LoginForm = () => {
   };
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/login', data);
-      console.log(response);
+      const response = await axios.post(environment.baseURL + '/login', data);
       localStorage.setItem('token', response.data.access_token);
       setDecondeAndDataToLocalStorage(response.data.access_token);
       if (response.status === 401) {
@@ -58,15 +58,25 @@ const LoginForm = () => {
           timer: 1500,
         });
       } else {
-        navigate('/dashboard');
+        if (localStorage.getItem('role') === 'RECEPTIONIST') {
+          navigate('/dashboard/reception');
+        } else if (localStorage.getItem('role') === 'OPERATOR') {
+          navigate('/dashboard/search-partner');
+        } else {
+          navigate('/dashboard');
+        }
         window.location.reload();
       }
     } catch (err) {
+      const message =
+        err.response.data?.message.message === 'Unauthorized'
+          ? 'Utilizador ou senha incorreto'
+          : err.response.data?.message.message;
       if (err.status === 401)
         Swal.fire({
           position: 'top-end',
           icon: 'warning',
-          title: 'Utilizador ou senha incorrectos',
+          title: message,
           showConfirmButton: false,
           timer: 1500,
         });

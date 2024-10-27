@@ -13,6 +13,8 @@ const LoginPage = lazy(() => import('pages/authentication/login'));
 const EntrancesPage = lazy(() => import('pages/entrances'));
 const CustomersPage = lazy(() => import('pages/users'));
 const OrdersPage = lazy(() => import('pages/partners'));
+const BraceletPage = lazy(() => import('pages/bracelet'));
+const CreateBraceletPage = lazy(() => import('pages/bracelet/create-bracelet'));
 const Account = lazy(() => import('pages/account'));
 const SignUpPage = lazy(() => import('pages/authentication/register'));
 const SearchPartnersPage = lazy(() => import('pages/authentication/search-partner'));
@@ -70,10 +72,26 @@ export const routes = [
             ),
           },
           {
+            path: paths.createBracelet,
+            element: (
+              <Protected>
+                <CreateBraceletPage />
+              </Protected>
+            ),
+          },
+          {
             path: paths.reception,
             element: (
               <Protected allAvailable={true}>
                 <ReceptionPage />
+              </Protected>
+            ),
+          },
+          {
+            path: paths.bracelet,
+            element: (
+              <Protected allAvailable={true}>
+                <BraceletPage />
               </Protected>
             ),
           },
@@ -95,6 +113,14 @@ export const routes = [
           },
           {
             path: paths.createUsers,
+            element: (
+              <Protected>
+                <CreateUsersPage />
+              </Protected>
+            ),
+          },
+          {
+            path: paths.updateUsers,
             element: (
               <Protected>
                 <CreateUsersPage />

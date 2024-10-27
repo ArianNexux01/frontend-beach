@@ -10,7 +10,13 @@ const Protected = ({
       return children;
     }
     const role = localStorage.getItem('role');
-    return role === 'OPERATOR' ? <Navigate to="/dashboard/search-partner" /> : children;
+    return role === 'OPERATOR' ? (
+      <Navigate to="search-partner" />
+    ) : role === 'RECEPCIONIST' ? (
+      <Navigate to="/dashboard/search-partner" />
+    ) : (
+      children
+    );
   } else {
     return token ? children : <Navigate to="/login" />;
   }

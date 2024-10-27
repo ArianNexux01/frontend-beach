@@ -2,6 +2,7 @@ import { Box, Button, IconButton, TextField } from '@mui/material';
 import api from 'api/axios';
 import IconifyIcon from 'components/base/IconifyIcon';
 import { StyledBackdrop, ModalContent, Modal } from 'components/modal';
+import { environment } from 'config/environment';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,6 +13,7 @@ interface PartnerData {
   name: string;
   email: string;
   phone: string;
+  ref: string;
   picture: string;
   registrationFormUrl: string;
 }
@@ -55,40 +57,57 @@ const EntryPartnerPage = () => {
     getData();
   }, []);
   const onSubmit: SubmitHandler<Inputs> = async (data: Inputs) => {
-    if (partner !== undefined) {
-      if (
-        companionsData.filter((companion) => companion.name === '' || companion.phone === '')
-          .length > 0
-      ) {
-        await Swal.fire({
-          position: 'center',
-          icon: 'warning',
-          title: 'Preencha os dados dos acompanhantes',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        setOpen(true);
-        return;
-      }
+    try {
+      if (partner !== undefined) {
+        if (
+          companionsData.length > 0 &&
+          companionsData.filter((companion) => companion.name === '').length > 0
+        ) {
+          await Swal.fire({
+            position: 'center',
+            icon: 'warning',
+            title: 'Preencha os dados dos acompanhantes',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          setOpen(true);
+          return;
+        }
+        let companionsWithoutPhone = companionsData.filter((companion) => companion.phone === '');
+        const companionsWithPhone = companionsData.filter((companion) => companion.phone !== '');
+        companionsWithoutPhone = companionsWithoutPhone.map((companion) => ({
+          ...companion,
+          phone: partner.phone,
+        }));
 
-      data.partnerId = partner.id;
-      const response = await api.post('/partner/entrance', {
-        numberOfCompanions: Number(data.numberOfCompanions),
-        companions: companionsData,
-        numberOfChildren: Number(data.numberOfChildren),
-        partnerId: partner.id,
+        data.partnerId = partner.id;
+        const response = await api.post('/partner/entrance', {
+          numberOfCompanions: Number(data.numberOfCompanions),
+          companions: [...companionsWithPhone, ...companionsWithoutPhone],
+          numberOfChildren: Number(data.numberOfChildren),
+          partnerId: partner.id,
+        });
+
+        if (response.status === 201) {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Entrada registada com sucesso!',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          navigate('/dashboard/search-partner');
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: error.response.data.message.message,
+        showConfirmButton: false,
+        timer: 1500,
       });
-
-      if (response.status === 201) {
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'Entrada registada com sucesso!',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        navigate('/dashboard');
-      }
     }
   };
 
@@ -137,15 +156,15 @@ const EntryPartnerPage = () => {
           Dados do Sócio
         </span>
         <Box mt={4} mb={4} sx={{ width: '450px' }}>
-          <img width={200} src={'http://localhost:3001/' + partner?.picture} />
+          <img width={200} src={environment.fileURL + partner?.picture} />
         </Box>
         <Box mt={5} mb={5} paddingRight={2} sx={{ width: '450px' }}>
           <label>Nome</label>
           <input disabled value={partner?.name} style={inputStyle} id="outlined-basic" />
         </Box>
         <Box mt={2} mb={5} paddingRight={2} sx={{ width: '450px' }}>
-          <label>Telefone</label>
-          <input disabled value={partner?.phone} style={inputStyle} id="outlined-basic" />
+          <label>Nº do Sócio</label>
+          <input disabled value={partner?.ref} style={inputStyle} id="outlined-basic" />
         </Box>
         <Box mt={2} mb={5} paddingRight={2} sx={{ width: '450px' }}>
           <TextField
@@ -153,6 +172,7 @@ const EntryPartnerPage = () => {
             variant="outlined"
             id="email"
             type="number"
+            defaultValue={0}
             label="Nº de Acompanhates"
             {...register('numberOfCompanions', { required: true })}
             InputProps={{
@@ -176,6 +196,7 @@ const EntryPartnerPage = () => {
             variant="outlined"
             id="email"
             type="number"
+            defaultValue={0}
             label="Nº de Crianças"
             {...register('numberOfChildren', { required: true })}
           />
@@ -186,7 +207,13 @@ const EntryPartnerPage = () => {
           <Button type="submit" variant="outlined">
             Registrar
           </Button>
-          <Button style={{ marginLeft: 5 }} variant="outlined">
+          <Button
+            onClick={() => {
+              navigate('/dashboard/search-partner');
+            }}
+            style={{ marginLeft: 5 }}
+            variant="outlined"
+          >
             Cancelar
           </Button>
         </Box>
@@ -224,7 +251,7 @@ const EntryPartnerPage = () => {
                 id="email"
                 type="text"
                 label="Telefone"
-                defaultValue={companionsData[index]?.phone ?? 0}
+                defaultValue={companionsData[index]?.phone}
                 onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                   handleSetTelephoneCompaniosByIndex(index, e);
                 }}
@@ -240,7 +267,13 @@ const EntryPartnerPage = () => {
             >
               Adicionar
             </Button>
-            <Button style={{ marginLeft: 5 }} variant="outlined">
+            <Button
+              onClick={() => {
+                setOpen(false);
+              }}
+              style={{ marginLeft: 5 }}
+              variant="outlined"
+            >
               Cancelar
             </Button>
           </Box>

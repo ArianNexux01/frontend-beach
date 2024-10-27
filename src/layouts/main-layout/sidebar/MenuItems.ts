@@ -2,6 +2,7 @@
 import { SvgIconProps } from '@mui/material';
 import CustomersIcon from 'components/icons/menu-icons/CustomersIcon';
 import HomeIcon from 'components/icons/menu-icons/HomeIcon';
+import InboxIcon from 'components/icons/menu-icons/InboxIcon';
 import OrderIcon from 'components/icons/menu-icons/OrderIcon';
 import SignInIcon from 'components/icons/menu-icons/SignInIcon';
 
@@ -32,7 +33,7 @@ const Menuitems: IMenuitems[] = [
     icon: HomeIcon,
     href: '/dashboard',
     available: true,
-    roles: ['ADMIN', 'OPERATOR'],
+    roles: ['ADMIN'],
   },
   {
     id: uniqueId(),
@@ -54,6 +55,14 @@ const Menuitems: IMenuitems[] = [
   },
   {
     id: uniqueId(),
+    title: 'Pulseiras',
+    icon: InboxIcon,
+    href: `${paths.bracelet}`,
+    available: true,
+    roles: ['ADMIN'],
+  },
+  {
+    id: uniqueId(),
     title: 'Entradas',
     icon: SignInIcon,
     href: `${paths.entrances}`,
@@ -66,7 +75,7 @@ const Menuitems: IMenuitems[] = [
     icon: SignInIcon,
     href: `${paths.searchPartner}`,
     available: true,
-    roles: ['OPERATOR'],
+    roles: [],
   },
   {
     id: uniqueId(),
@@ -74,7 +83,7 @@ const Menuitems: IMenuitems[] = [
     icon: SignInIcon,
     href: `${paths.reception}`,
     available: true,
-    roles: ['OPERATOR', 'RECEPTIONIST'],
+    roles: [],
   },
   /* {
      navlabel: true,

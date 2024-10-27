@@ -2,7 +2,7 @@ import { Grid, SvgIconProps } from '@mui/material';
 import CustomersIcon from 'components/icons/menu-icons/CustomersIcon';
 import PersonalSettingsIcon from 'components/icons/menu-icons/PersonalSettingsIcon';
 import StatisticsCardItem from './StatisticsCardItem';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useState, Ref, forwardRef } from 'react';
 import api from 'api/axios';
 
 export interface IStatisticsCard {
@@ -12,25 +12,27 @@ export interface IStatisticsCard {
   roles: string[];
   icon: (props: SvgIconProps) => JSX.Element;
 }
-
-const StatisticsCards = () => {
+export interface ChildHandle {
+  getData: () => Promise<unknown>;
+}
+const StatisticsCards = forwardRef<ChildHandle>((_props, ref: Ref<ChildHandle>) => {
   const [stats, setStats] = useState<IStatisticsCard[]>([]);
   const getData = async () => {
     const response = await api.get('/dashboard');
     setStats([
       /* {
-        id: 0,
-        icon: DollarIcon,
-        title: response.data.countPartners ?? 0,
-        subtitle: 'Sócios',
-      },
+      id: 0,
+      icon: DollarIcon,
+      title: response.data.countPartners ?? 0,
+      subtitle: 'Sócios',
+    },
 
-      {
-        id: 1,
-        icon: CartIcon,
-        title: response.data.countUsers ?? 0,
-        subtitle: 'Usuários',
-      },*/
+    {
+      id: 1,
+      icon: CartIcon,
+      title: response.data.countUsers ?? 0,
+      subtitle: 'Usuários',
+    },*/
       {
         id: 1,
         icon: PersonalSettingsIcon,
@@ -42,7 +44,7 @@ const StatisticsCards = () => {
         id: 2,
         icon: CustomersIcon,
         title: response.data.entrancesGuestDay[0].total ?? 0,
-        subtitle: 'Entrada de Não sócios - Dia',
+        subtitle: 'Entrada de Não Sócios - Dia',
         roles: ['ADMIN', 'OPERATOR', 'RECEPTIONIST'],
       },
       {
@@ -59,9 +61,19 @@ const StatisticsCards = () => {
         subtitle: 'Crianças - Dia',
         roles: ['ADMIN', 'OPERATOR', 'RECEPTIONIST'],
       },
-
       {
         id: 5,
+        icon: CustomersIcon,
+        title:
+          Number(response.data.countChildrenDay) +
+          Number(response.data.entrancesDay[0].total) +
+          Number(response.data.countCompaniosDay) +
+          Number(response.data.entrancesGuestDay[0].total),
+        subtitle: 'Total - Dia',
+        roles: ['ADMIN', 'OPERATOR', 'RECEPTIONIST'],
+      },
+      {
+        id: 13,
         icon: CustomersIcon,
         title: response.data.entrancesMonth[0].total ?? 0,
         subtitle: 'Entrada de sócios - Mês',
@@ -86,6 +98,17 @@ const StatisticsCards = () => {
         icon: CustomersIcon,
         title: response.data.countChildrenMonth ?? 0,
         subtitle: 'Crianças - Mês',
+        roles: ['ADMIN'],
+      },
+      {
+        id: 13,
+        icon: CustomersIcon,
+        title:
+          Number(response.data.countChildrenMonth) +
+          Number(response.data.entrancesMonth[0].total) +
+          Number(response.data.countCompaniosMonth) +
+          Number(response.data.entrancesGuestMonth[0].total),
+        subtitle: 'Total - Mês',
         roles: ['ADMIN'],
       },
       {
@@ -116,18 +139,34 @@ const StatisticsCards = () => {
         subtitle: 'Crianças - Ano',
         roles: ['ADMIN'],
       },
+      {
+        id: 13,
+        icon: CustomersIcon,
+        title:
+          Number(response.data.countChildrenYear[0].total) +
+          Number(response.data.entrancesYear[0].total) +
+          Number(response.data.countCompaniosYear[0].total) +
+          Number(response.data.entrancesGuestYear[0].total),
+        subtitle: 'Total - Ano',
+        roles: ['ADMIN'],
+      },
     ]);
   };
+
+  useImperativeHandle(ref, () => ({
+    getData,
+  }));
+
   useEffect(() => {
     getData();
   }, []);
   return (
-    <Grid container spacing={0.25}>
+    <Grid container spacing={0.5}>
       {stats
         .filter((e: IStatisticsCard) => e.roles.includes(localStorage.getItem('role') ?? 'ADMIN'))
         .map((cardItem) => {
           return (
-            <Grid item xs={12} sm={6} xl={3} key={cardItem.id}>
+            <Grid item sx={{ width: '20%' }} key={cardItem.id}>
               <StatisticsCardItem
                 cardData={cardItem}
                 index={cardItem.id}
@@ -138,6 +177,6 @@ const StatisticsCards = () => {
         })}
     </Grid>
   );
-};
+});
 
 export default StatisticsCards;

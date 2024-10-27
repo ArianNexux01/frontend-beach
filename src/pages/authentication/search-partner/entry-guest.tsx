@@ -12,13 +12,12 @@ const EntryGuestPage = () => {
   const [companionsData, setCompanionsData] = useState<Companions[]>([]);
   const navigate = useNavigate();
   const handleOpen = () => {
-    console.log(companionsData);
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
   type InputsGuest = {
     name?: string;
-    telephone?: string;
+    phone: string;
     numberOfChildren?: number;
     numberOfCompanions?: number;
   };
@@ -47,10 +46,17 @@ const EntryGuestPage = () => {
       setOpen(true);
       return;
     }
+    let companionsWithoutPhone = companionsData.filter((companion) => companion.phone === '');
+    const companionsWithPhone = companionsData.filter((companion) => companion.phone !== '');
+    companionsWithoutPhone = companionsWithoutPhone.map((companion) => ({
+      ...companion,
+      phone: watch('phone'),
+    }));
+
     const response = await api.post('/guest/entrance', {
       name: data.name,
-      telephone: data.telephone,
-      companions: companionsData,
+      telephone: data.phone,
+      companions: [...companionsWithPhone, ...companionsWithoutPhone],
       numberOfCompanions: Number(data.numberOfCompanions),
       numberOfChildren: Number(data.numberOfChildren),
     });
@@ -63,14 +69,13 @@ const EntryGuestPage = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate('/dashboard');
+      navigate('/dashboard/search-partner');
     }
   };
 
   const handleSetNameCompaniosByIndex = (index: number, e: React.FocusEvent<HTMLInputElement>) => {
     if (companionsData !== undefined) {
       const allCompanions: Companions[] = companionsData;
-      console.log(companionsData, index);
       allCompanions[index].name = e.target.value;
       setCompanionsData(allCompanions);
     }
@@ -130,7 +135,7 @@ const EntryGuestPage = () => {
             id="email"
             type="text"
             label="Telefone"
-            {...registerGuest('telephone', { required: true })}
+            {...registerGuest('phone', { required: true })}
           />
         </Box>
         <Box mt={4} mb={4} sx={{ width: '450px' }}>
@@ -139,6 +144,7 @@ const EntryGuestPage = () => {
             variant="outlined"
             id="email"
             type="number"
+            defaultValue={0}
             label="Nº de Acompanhates"
             {...registerGuest('numberOfCompanions', { required: true })}
             InputProps={{
@@ -161,6 +167,7 @@ const EntryGuestPage = () => {
             variant="outlined"
             id="email"
             type="number"
+            defaultValue={0}
             label="Nº de Crianças"
             {...registerGuest('numberOfChildren', { required: true })}
           />
@@ -170,7 +177,13 @@ const EntryGuestPage = () => {
           <Button type="submit" variant="outlined">
             Registrar
           </Button>
-          <Button style={{ marginLeft: 5 }} variant="outlined">
+          <Button
+            onClick={() => {
+              navigate('/dashboard/search-partner');
+            }}
+            style={{ marginLeft: 5 }}
+            variant="outlined"
+          >
             Cancelar
           </Button>
         </Box>
@@ -224,7 +237,13 @@ const EntryGuestPage = () => {
             >
               Adicionar
             </Button>
-            <Button style={{ marginLeft: 5 }} variant="outlined">
+            <Button
+              onClick={() => {
+                setOpen(false);
+              }}
+              style={{ marginLeft: 5 }}
+              variant="outlined"
+            >
               Cancelar
             </Button>
           </Box>

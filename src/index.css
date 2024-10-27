@@ -57,3 +57,7 @@ input:disabled {
   color: rgb(143, 139, 139);
 
 }
+
+.swal-overlay {
+  z-index: 100000000000 !important;
+}

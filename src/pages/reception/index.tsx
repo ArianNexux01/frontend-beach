@@ -11,9 +11,11 @@ import {
 import { GridColDef } from '@mui/x-data-grid';
 import api from 'api/axios';
 import Table from 'components/sections/dashboard/transactions/Table';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyledBackdrop, ModalContent, Modal } from 'components/modal';
 import Swal from 'sweetalert2';
+import StatisticsCards from 'components/sections/dashboard/statistics/StatisticCards';
+import PdfGenerator from 'helpers/pdf-generator';
 
 type Companions = {
   id: string;
@@ -23,6 +25,10 @@ type Companions = {
   isPartner: boolean;
   isOwn: boolean;
 };
+
+export interface ChildHandle {
+  getData: () => Promise<unknown>;
+}
 const ReceptionPage = () => {
   const [entrances, setEntrances] = useState([]);
   const [, setBracelet] = useState('');
@@ -39,14 +45,26 @@ const ReceptionPage = () => {
   ]);
   const [open, setOpen] = useState(false);
   const [entranceId, setEntranceId] = useState('');
+  const [braceletData, setBraceletData] = useState([]);
+  const dashboardReference = useRef<ChildHandle>(null);
   const handleClose = () => setOpen(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
   const getData = async () => {
-    const response = await api.get('/entrances');
+    const response = await api.get('/entrances?verified=false');
+    const responseBracelet = await api.get('/bracelet');
     if (response.status === 200) {
       setEntrances(response.data);
+      setBraceletData(responseBracelet.data);
+      fetchStatisticsData();
+    }
+  };
+
+  const fetchStatisticsData = () => {
+    if (dashboardReference.current) {
+      dashboardReference.current.getData();
     }
   };
 
@@ -75,13 +93,25 @@ const ReceptionPage = () => {
   };
 
   const handleUpdateBracelet = async () => {
+    console.log(companions);
+    if (companions.filter((companion) => companion?.bracelet === null).length > 0) {
+      Swal.fire({
+        position: 'top-right',
+        icon: 'warning',
+        title: 'Dados incompletos, Não é possível entrada no recinto sem especificar a pulseira',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
     const response = await api.put(`/companions/bracelet/${entranceId}`, companions);
 
     if (response.status === 200) {
       getData();
       Swal.fire({
         position: 'center',
-        icon: 'warning',
+        icon: 'success',
         title: 'Pulseiras registradas com sucesso',
         showConfirmButton: false,
         timer: 1500,
@@ -101,12 +131,19 @@ const ReceptionPage = () => {
     setCompanions(companionsData);
   };
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Name' },
-    { field: 'phone', headerName: 'Telefone' },
+    { field: 'name', headerName: 'Nome' },
+    { field: 'numberOfChildren', headerName: 'Número de Crianças' },
     { field: 'numberOfCompanions', headerName: 'Nº de Acompanhates' },
     {
+      field: 'isPartner',
+      headerName: 'Sócio',
+      renderCell: (data) => {
+        return <span>{data.row.partnerId === null ? 'Sim' : 'Não'}</span>;
+      },
+    },
+    {
       field: 'action',
-      headerName: 'Ver acompanhantes',
+      headerName: 'Registrar',
       renderCell: (data) => {
         return (
           <Button
@@ -134,6 +171,10 @@ const ReceptionPage = () => {
         >
           <Typography variant="h2">Recepção</Typography>
         </Box>
+        <Box mb={4}>
+          <StatisticsCards ref={dashboardReference} />
+        </Box>
+        <PdfGenerator />
         <Table data={entrances} columns={columns} />
       </div>
 
@@ -161,16 +202,6 @@ const ReceptionPage = () => {
                 disabled
                 defaultValue={e.name}
               />
-              <TextField
-                sx={{ marginTop: '10px' }}
-                fullWidth
-                variant="outlined"
-                id="email"
-                type="text"
-                label="Telefone"
-                disabled
-                defaultValue={e.phone}
-              />
               <InputLabel id="demo-simple-select-label">Pulseira</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -183,9 +214,9 @@ const ReceptionPage = () => {
                   handleChangeWatch(event, e);
                 }}
               >
-                <MenuItem value={'Verde'}>Verde</MenuItem>
-                <MenuItem value={'Preta'}>Preta</MenuItem>
-                <MenuItem value={'Azul'}>Azul</MenuItem>
+                {braceletData.map((data: { name: string }) => (
+                  <MenuItem value={data.name}>{data.name}</MenuItem>
+                ))}
               </Select>
             </Box>
           ))}
@@ -193,7 +224,7 @@ const ReceptionPage = () => {
             <Button onClick={handleUpdateBracelet} variant="outlined">
               Registrar
             </Button>
-            <Button style={{ marginLeft: 5 }} variant="outlined">
+            <Button onClick={() => setOpen(false)} style={{ marginLeft: 5 }} variant="outlined">
               Cancelar
             </Button>
           </Box>
