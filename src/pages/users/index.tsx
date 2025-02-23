@@ -1,7 +1,7 @@
 import { Box, Button, Switch as SwitchInput, Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import api from 'api/axios';
-import Table from 'components/sections/dashboard/transactions/Table';
+import Table from 'components/sections/dashboard/transactions/MainTable';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -17,7 +17,45 @@ const UsersPage = () => {
       setUsers(response.data);
     }
   };
+  const handleDeleteUsers = async (id: number) => {
+    try {
+      const message = 'Usuario eliminado com sucesso!';
 
+      Swal.fire({
+        title: '',
+        text: 'Pretente realmente eliminar este usuário?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim',
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await api.delete(`/user/${id}`);
+          if (response.status === 200) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: message,
+              showConfirmButton: false,
+              timer: 5500,
+            });
+            getData();
+          }
+        }
+      });
+    } catch (err) {
+      if (err.status === 400) {
+        Swal.fire({
+          position: 'center',
+          icon: 'warning',
+          title: err.response.data?.message[0] ?? err.response.data?.message,
+          showConfirmButton: false,
+          timer: 5500,
+        });
+      }
+    }
+  };
   useEffect(() => {
     getData();
   }, []);
@@ -32,7 +70,7 @@ const UsersPage = () => {
           icon: 'success',
           title: message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
         getData();
       }
@@ -43,7 +81,7 @@ const UsersPage = () => {
           icon: 'warning',
           title: err.response.data?.message[0] ?? err.response.data?.message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       }
     }
@@ -82,13 +120,24 @@ const UsersPage = () => {
       headerName: 'Ação',
       renderCell: (data) => {
         return (
-          <Button
-            onClick={() => {
-              navigate(routeToUpdateUsers + `/${data.id}`);
-            }}
-          >
-            Ver
-          </Button>
+          <>
+            <Button
+              onClick={() => {
+                navigate(routeToUpdateUsers + `/${data.id}`);
+              }}
+            >
+              Ver
+            </Button>
+            {data.row.username !== 'administrador@beach.com' && (
+              <Button
+                onClick={() => {
+                  handleDeleteUsers(data.row.id);
+                }}
+              >
+                Eliminar
+              </Button>
+            )}
+          </>
         );
       },
     },

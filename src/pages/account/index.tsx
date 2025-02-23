@@ -32,7 +32,7 @@ const Account = () => {
           icon: 'success',
           title: 'Senha actualizada com sucesso!',
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
 
         //  navigate('/dashboard/partners');
@@ -44,7 +44,7 @@ const Account = () => {
           icon: 'warning',
           title: error.response.data.details,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
 
         //  navigate('/dashboard/partners');

@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import api from 'api/axios';
-import Table from 'components/sections/dashboard/transactions/Table';
+import Table from 'components/sections/dashboard/transactions/MainTable';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -29,7 +29,7 @@ const BraceletPage = () => {
           icon: 'success',
           title: 'Pulseira eliminada com sucesso!',
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
 
         await getData();
@@ -41,7 +41,7 @@ const BraceletPage = () => {
           icon: 'warning',
           title: err.response.data?.message.message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       }
     }

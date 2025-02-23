@@ -28,7 +28,7 @@ const CreateBraceletPage = () => {
           icon: 'success',
           title: 'Pulseira cadastrado com sucesso!',
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
 
         navigate('/dashboard/bracelet');
@@ -40,7 +40,7 @@ const CreateBraceletPage = () => {
           icon: 'warning',
           title: err.response.data?.message.message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       }
     }

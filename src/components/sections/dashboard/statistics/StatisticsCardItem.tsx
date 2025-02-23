@@ -22,8 +22,8 @@ const StatisticsCardItem = ({ cardData, index }: StatisticsCardProps) => {
           ...(upXs && {
             borderTopLeftRadius: index === 0 ? 8 : 0,
             borderTopRightRadius: index === 0 ? 8 : 0,
-            borderBottomLeftRadius: index === 3 ? 8 : 0,
-            borderBottomRightRadius: index === 3 ? 8 : 0,
+            borderBottomLeftRadius: index === 5 ? 8 : 0,
+            borderBottomRightRadius: index === 5 ? 8 : 0,
           }),
           ...(upSm && {
             borderTopLeftRadius: index === 0 ? 8 : 0,
@@ -42,7 +42,7 @@ const StatisticsCardItem = ({ cardData, index }: StatisticsCardProps) => {
         <Box
           sx={{
             p: 5,
-            flexGrow: 4,
+            flexGrow: 3,
             height: '150px',
           }}
         >

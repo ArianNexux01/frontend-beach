@@ -34,13 +34,13 @@ const CustomDataGridFooter = (props: CustomFooterProps) => {
       {pageCount !== 0 ? (
         <>
           <Typography variant="body2" color="text.secondary">
-            Showing {startRow} to {endRow} of {props.labelRowsPerPage} data
+            Mostrando {startRow} a {endRow} de {props.labelRowsPerPage} resultados
           </Typography>
         </>
       ) : (
         <>
           <Typography variant="body2" color="text.secondary">
-            Showing 0 result of {props.labelRowsPerPage} data
+            Mostrando 0 de {props.labelRowsPerPage} resultados
           </Typography>
         </>
       )}
@@ -56,12 +56,12 @@ const CustomDataGridFooter = (props: CustomFooterProps) => {
             slots={{
               previous: () => (
                 <Typography fontWeight={400} variant="caption" textAlign="center">
-                  Previous
+                  Anterior
                 </Typography>
               ),
               next: () => (
                 <Typography fontWeight="regular" variant="caption" sx={{ pr: 0 }}>
-                  Next
+                  Próximo
                 </Typography>
               ),
             }}

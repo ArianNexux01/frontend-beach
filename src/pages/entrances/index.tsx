@@ -1,13 +1,13 @@
 import { Box, Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import api from 'api/axios';
-import Table from 'components/sections/dashboard/transactions/Table';
+import Table from 'components/sections/dashboard/transactions/MainTable';
 import { useEffect, useState } from 'react';
 
 const EntrancesPage = () => {
   const [entrances, setEntrances] = useState([]);
   const getData = async () => {
-    const response = await api.get(`/entrances?verified=true`);
+    const response = await api.get(`/entrances?verified=true&onlyToday=false`);
     if (response.status === 200) {
       setEntrances(response.data);
     }
@@ -19,8 +19,9 @@ const EntrancesPage = () => {
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Nome' },
-    { field: 'numberOfCompanions', headerName: 'Nº de Acompanhates' },
+    { field: 'numberOfCompanions', headerName: 'Nº de Acompanhantes' },
     { field: 'numberOfChildren', headerName: 'Nº de Crianças' },
+    { field: 'numberOfTeenages', headerName: 'Nº de Adolescente' },
     { field: 'isPartner', headerName: 'Sócio?' },
     { field: 'createdAt', headerName: 'Data e Hora' },
   ];

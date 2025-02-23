@@ -10,6 +10,7 @@ const paths = {
   dashboard: `${rootPaths.root}dashboard`,
   account: `account`,
   entrances: `entrances`,
+  exits: `exits`,
   partners: `partners`,
   createPartners: `create-partners`,
   updatePartners: `update-partners/:id`,

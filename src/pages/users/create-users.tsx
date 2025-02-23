@@ -9,7 +9,7 @@ type Inputs = {
   name: string;
   username: string;
   phone: string;
-  password: string;
+  password?: string;
   role: string;
 };
 const CreateUsersPage = () => {
@@ -46,12 +46,21 @@ const CreateUsersPage = () => {
         response = await api.post('/user/register', data);
         message = 'Usuário cadastrado com sucesso!';
       } else {
-        response = await api.put(`/user/${id}`, {
+        let bodyForRequest: Inputs = {
           name: data.name,
           username: data.username,
           phone: data.phone,
           role: data.role,
-        });
+        };
+
+        if (data.password) {
+          bodyForRequest = {
+            ...bodyForRequest,
+            password: data.password,
+          };
+        }
+        response = await api.put(`/user/${id}`, bodyForRequest);
+
         message = 'Usuário actualizado com sucesso!';
       }
       if (response.status === 200 || response.status === 201) {
@@ -60,7 +69,7 @@ const CreateUsersPage = () => {
           icon: 'success',
           title: message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
 
         navigate('/dashboard/users');
@@ -72,7 +81,7 @@ const CreateUsersPage = () => {
           icon: 'warning',
           title: err.response.data?.message[0] ?? err.response.data?.message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       }
     }
@@ -133,21 +142,31 @@ const CreateUsersPage = () => {
             {errors.role && <span className="error-message">Campo obrigatório</span>}
           </Box>
 
-          {id === undefined && (
-            <Box marginTop={5}>
-              <label>Senha</label>
-              <input
-                {...register('password', { required: true })}
-                style={inputStyle}
-                type="password"
-                id="outlined-basic"
-              />
-              {errors.password && <span className="error-message">Campo obrigatório</span>}
-            </Box>
-          )}
+          <Box marginTop={5}>
+            <label>Senha</label>
+            <input
+              {...register('password', { required: id === undefined })}
+              style={inputStyle}
+              type="password"
+              autoComplete="off"
+              id="outlined-basic"
+            />
+            {errors.password && <span className="error-message">Campo obrigatório</span>}
+          </Box>
+
           <Box marginTop={5}>
             <Button type="submit" variant="outlined">
               {id === undefined ? 'Adicionar' : 'Actualizar'}
+            </Button>
+            <Button
+              sx={{ marginLeft: '10px' }}
+              onClick={() => {
+                navigate('/dashboard/users');
+              }}
+              type="submit"
+              variant="outlined"
+            >
+              Cancelar
             </Button>
           </Box>
         </Box>

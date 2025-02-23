@@ -11,7 +11,7 @@ type Inputs = {
   name: string;
   email: string;
   phone: string;
-  ref?: string;
+  ref: string;
 };
 
 const CreatePartnersPage = () => {
@@ -22,15 +22,14 @@ const CreatePartnersPage = () => {
   const navigate = useNavigate();
   const fileTypes = ['JPG', 'PNG', 'GIF'];
   const [picture, setPicture] = useState<Blob | string>(new Blob());
-  const [ref, setRef] = useState('');
-  const [nextNumberPartner, setNextNumberPartner] = useState(0);
+  const [, setRef] = useState('');
+  const [, setNextNumberPartner] = useState(0);
   const [registrationForm, setRegistraitionForm] = useState<Blob | string>(new Blob());
   const { id } = useParams();
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -56,17 +55,16 @@ const CreatePartnersPage = () => {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const formData = new FormData();
-      formData.append('files', registrationForm);
-      formData.append('files', picture);
+      formData.append('ficha', registrationForm);
+      formData.append('picture', picture);
       formData.append('name', data.name);
       formData.append('email', data.email);
       formData.append('phone', data.phone);
+      formData.append('ref', data.ref.toString());
       let response;
       if (id === undefined) {
-        formData.append('ref', nextNumberPartner.toString());
         response = await api.post('/partner/register', formData);
       } else {
-        formData.append('ref', ref);
         response = await api.put(`/partner/${id}`, formData);
       }
 
@@ -76,7 +74,7 @@ const CreatePartnersPage = () => {
           icon: 'success',
           title: 'Sócio cadastrado com sucesso!',
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
 
         navigate('/dashboard/partners');
@@ -88,7 +86,7 @@ const CreatePartnersPage = () => {
           icon: 'success',
           title: 'Sócio actualizado com sucesso!',
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       }
       navigate('/dashboard/partners');
@@ -99,7 +97,7 @@ const CreatePartnersPage = () => {
           icon: 'warning',
           title: err.response.data?.message.message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       }
     }
@@ -156,8 +154,10 @@ const CreatePartnersPage = () => {
           <Box marginTop={5}>
             <label>Número de Socio</label>
             <input
-              value={id === undefined ? nextNumberPartner : watch('ref')}
-              disabled={true}
+              type="number"
+              {...register('ref', {
+                required: 'Número de Sócio é um campo obrigatório!',
+              })}
               style={inputStyle}
               id="outlined-basic"
             />
@@ -180,38 +180,34 @@ const CreatePartnersPage = () => {
           <Box marginTop={5} sx={{ display: 'flex', flexDirection: 'column' }}>
             <label>Foto</label>
 
-            {id === undefined && (
-              <FileUploader
-                fileOrFiles={{
-                  dragActive: 'Drop the files here...',
-                  dragReject: 'File type not accepted, sorry!',
-                  drop: 'Drag & Drop your files here',
-                }}
-                label="TEXT"
-                handleChange={handleChangePicture}
-                name="file"
-                types={fileTypes}
-              />
-            )}
+            <FileUploader
+              fileOrFiles={{
+                dragActive: 'Drop the files here...',
+                dragReject: 'File type not accepted, sorry!',
+                drop: 'Drag & Drop your files here',
+              }}
+              label="TEXT"
+              handleChange={handleChangePicture}
+              name="file"
+              types={fileTypes}
+            />
 
             <img style={{ marginTop: '15px' }} width={250} src={picture.toString()} />
           </Box>
           <Box marginTop={5} sx={{ display: 'flex', flexDirection: 'column' }}>
             <label>Ficha de Inscrição</label>
 
-            {id === undefined && (
-              <FileUploader
-                fileOrFiles={{
-                  dragActive: 'Drop the files here...',
-                  dragReject: 'File type not accepted, sorry!',
-                  drop: 'Drag & Drop your files here',
-                }}
-                label="TEXT"
-                handleChange={handleChangeRegistrationForm}
-                name="files"
-                types={fileTypes}
-              />
-            )}
+            <FileUploader
+              fileOrFiles={{
+                dragActive: 'Drop the files here...',
+                dragReject: 'File type not accepted, sorry!',
+                drop: 'Drag & Drop your files here',
+              }}
+              label="TEXT"
+              handleChange={handleChangeRegistrationForm}
+              name="files"
+              types={fileTypes}
+            />
 
             <img style={{ marginTop: '15px' }} width={250} src={registrationForm.toString()} />
           </Box>

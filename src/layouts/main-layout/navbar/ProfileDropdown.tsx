@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  ButtonBase,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import IconifyIcon from 'components/base/IconifyIcon';
 import { profileOptions } from 'data/navbar/menu-data';
 import { useState } from 'react';
@@ -42,7 +33,7 @@ const ProfileDropdown = () => {
         pr: 2,
       }}
     >
-      <ButtonBase disableRipple={true} onClick={handleClick}>
+      <span onClick={handleClick}>
         <Stack
           spacing={1.5}
           direction="row"
@@ -61,7 +52,7 @@ const ProfileDropdown = () => {
             {localStorage.getItem('username')}
           </Typography>
         </Stack>
-      </ButtonBase>
+      </span>
       <Menu
         keepMounted
         anchorEl={anchorEl}

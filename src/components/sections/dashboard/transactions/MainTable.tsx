@@ -1,11 +1,5 @@
 import { LinearProgress, Stack } from '@mui/material';
-import {
-  DataGrid,
-  GridColDef,
-  GridPaginationModel,
-  GridSlots,
-  useGridApiRef,
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridSlots, useGridApiRef } from '@mui/x-data-grid';
 import { ChangeEvent, useEffect, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 
@@ -17,36 +11,25 @@ import CustomDataGridNoRows from 'components/common/table/CustomDataGridNoRows';
 
 type Props = {
   columns: GridColDef[];
+  data: any[];
   title?: string;
   showInputBar?: boolean;
   numberOfPages?: number;
-  getData?: Function;
 };
 
-const Table: React.FC<Props> = ({
+const MainTable: React.FC<Props> = ({
   columns,
+  data,
   showInputBar = true,
   title = 'Lista',
   numberOfPages = 1,
-  getData = (page: number, limit: number) => {},
 }) => {
   const [searchText, setSearchText] = useState('');
   const apiRef = useGridApiRef<any>();
-  
-  const handlePageChange = (model: GridPaginationModel) => {
-    callbackUseEffect(model.page + 1, 5);
-  };
 
-  const callbackUseEffect = async (page: number = 1, limit: number = 5) => {
-    const data = await getData(page, limit);
-    apiRef.current.setRows(data.data);
-    console.log(data);
-    apiRef.current.setRowCount(2);
-    console.log(apiRef.current);
-  };
   useEffect(() => {
-    callbackUseEffect();
-  }, []);
+    apiRef.current.setRows(data);
+  });
 
   useEffect(() => {
     apiRef.current.setQuickFilterValues([searchText]);
@@ -56,7 +39,7 @@ const Table: React.FC<Props> = ({
     const searchValue = event.currentTarget.value;
     setSearchText(searchValue);
     if (searchValue === '') {
-      callbackUseEffect();
+      apiRef.current.setRows(data);
     }
   };
 
@@ -92,7 +75,6 @@ const Table: React.FC<Props> = ({
           disableColumnSelector
           disableRowSelectionOnClick
           rowSelection={false}
-          onPaginationModelChange={handlePageChange} // Updates page state
           slots={{
             loadingOverlay: LinearProgress as GridSlots['loadingOverlay'],
             pagination: CustomDataGridFooter,
@@ -125,4 +107,4 @@ const Table: React.FC<Props> = ({
   );
 };
 
-export default Table;
+export default MainTable;

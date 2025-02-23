@@ -11,25 +11,23 @@ interface Host {
   email: string;
   phone: string;
   bracelet: string;
+  ref: string;
+  isOut: boolean;
+  isPartner: string;
+  createdAt: string;
+  companions: Companions[];
 }
 
-interface Partner extends Host {
-  ref: number;
-}
-interface Guest extends Host {}
 // Define the main object interface
 interface Companions {
   id: string;
   name: string;
   phone: string;
   bracelet: string;
-  guestId: string | null;
-  partnerId: string;
+  isOut: boolean;
   entranceId: string;
   createdAt: string;
   updatedAt: string;
-  guest: Guest;
-  partner: Partner;
 }
 
 const PdfGenerator: React.FC = () => {
@@ -39,90 +37,91 @@ const PdfGenerator: React.FC = () => {
 
     return response.data;
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const hostAlreadyExists = (tableRows: any, data: Companions) => {
-    if (data.guest !== null) {
-      return (
-        tableRows.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (row: any) =>
-            row[1] === "<span style='font-weight: bolder'>" + data.guest.phone + '</span>',
-        ).length > 0
-      );
-    } else {
-      return (
-        tableRows.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (row: any) =>
-            row[1] === "<span style='font-weight: bolder'>" + data.partner.phone + '</span>',
-        ).length > 0
-      );
-    }
-  };
-  const generatePdf = async () => {
-    const reportData = await getData();
-    const doc = new jsPDF('p', 'mm', 'a4');
 
+  const generatePdf = async (all: number) => {
+    const reportData = await getData();
+    const doc = new jsPDF('l', 'mm', 'a4');
+    console.log(reportData);
     //  const tableColumnHeaders = ['Nome', 'Telefone', 'Sócio', 'Cor da Pulseira', 'Hora'];
-    const tableRows: string[][] = [];
     let htmlContent = `
-    <div>
+    <div style="font-size: 8px">
       <h2 style="margin-bottom: 25px">Lista de Entradas do Dia - ${new Date().toLocaleDateString()}</h2>
-      <table style="width:38%; border-collapse: collapse;" border="1">
+      <table style="width:40%; border-collapse: collapse;" border="1">
         <thead style="background-color: #c2b067; color: white;">
           <tr>
-            <th style="padding: 10px;">Nome</th>
-            <th style="padding: 10px;">Telefone</th>
-            <th style="padding: 10px;">Sócio</th>
-            <th style="padding: 10px;">Cor da Pulseira</th>
-            <th style="padding: 10px;">Hora</th>
-            <th style="padding: 10px;">Entrada</th>
+            <th style="padding: 5px;width:30px">Sócio</th>
+            <th style="padding: 5px;width:200px">Nome</th>
+            <th style="padding: 5px;width:180px">Convidado</th>
+            <th style="padding: 5px;width:50px">Tipo</th>
+            <th style="padding: 5px;width:60px">Telefone</th>
+            <th style="padding: 5px;width:40px">Pulseira</th>
+            <th style="padding: 5px; width:20px">Hora</th>
+            <th style="padding: 5px;width:30px">Saída</th>
           </tr>
         </thead>
         <tbody>
   `;
-
-    reportData.forEach((data: Companions) => {
+    reportData.forEach((data: Host) => {
       const hourMinute =
-        new Date(data.createdAt).getUTCHours().toString() +
+        new Date(data.createdAt).getUTCHours().toString().padStart(2, '0') +
         ':' +
-        new Date(data.createdAt).getUTCMinutes().toString();
-      if (!hostAlreadyExists(tableRows, data)) {
-        if (data.guest !== null) {
-          tableRows.push([
-            "<span style='font-weight: bolder'>" + data.guest.name + '</span>',
-            "<span style='font-weight: bolder'>" + data.guest.phone + '</span>',
-            "<span style='font-weight: bolder'>" + 'Não' + '</span>',
-            "<span style='font-weight: bolder'>" + data.guest.bracelet + '</span>',
-            "<span style='font-weight: bolder'>" + hourMinute + '</span>',
-          ]);
-        } else {
-          tableRows.push([
-            "<span style='font-weight: bolder'>" + data.partner.name + '</span>',
-            "<span style='font-weight: bolder'>" + data.partner.phone + '</span>',
-            "<span style='font-weight: bolder'>" + 'Sim' + '</span>',
-            "<span style='font-weight: bolder'>" + data.partner.bracelet + '</span>',
-            "<span style='font-weight: bolder'>" + hourMinute + '</span>',
-          ]);
-        }
-      }
-      tableRows.push([data.name, data.phone, 'Não', data.bracelet, hourMinute]);
-    });
-
-    console.log('Entrei');
-    tableRows.forEach((row) => {
-      htmlContent += `
+        new Date(data.createdAt).getUTCMinutes().toString().padStart(2, '0');
+      if (all === 1) {
+        htmlContent += `
       <tr>
-        <td style="padding: 10px;">${row[0]}</td>
-        <td style="padding: 10px;">${row[1]}</td>
-        <td style="padding: 10px;">${row[2]}</td>
-        <td style="padding: 10px;">${row[3]}</td>
-        <td style="padding: 10px;">${row[4]}</td>
-        <td style="padding: 10px;"><input type="checkbox"></td>
-      </tr>`;
+        <td style="padding: 1px;"><span style='font-weight: bolder'> ${data.ref} </span></td>
+        <td style="padding: 2px; width:150px"><span style='font-weight: bolder'> ${data.name} </span></td>
+        <td style="padding: 1px;"><span style='font-weight: bolder'></span></td>
+        <td style="padding: 1px;"><span style='font-weight: bolder'>${data.isPartner} </span></td>
+        <td style="padding: 1px;"><span style='font-weight: bolder'>${data.phone} </span></td>
+        <td style="padding: 1px;"><span style='font-weight: bolder'> ${data.bracelet}</span></td>
+        <td style="padding: 1px;"><span style='font-weight: bolder'> ${hourMinute}</span></td>
+            <td style="padding: 1px;"><input type="checkbox" ${data.isOut ? 'checked' : ''}></td>
+      </tr>
+  `;
+      } else if (all === 2 && !data.isOut) {
+        htmlContent += `
+        <tr>
+          <td style="padding: 1px;"><span style='font-weight: bolder'> ${data.ref} </span></td>
+          <td style="padding: 2px; width:150px"><span style='font-weight: bolder'> ${data.name} </span></td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'></span></td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'>${data.isPartner} </span></td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'>${data.phone} </span></td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'> ${data.bracelet}</span></td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'> ${hourMinute}</span></td>
+              <td style="padding: 1px;"><input type="checkbox" ${data.isOut ? 'checked' : ''}></td>
+        </tr>
+    `;
+      }
+      data.companions.forEach((companions: Companions) => {
+        if (all === 1) {
+          htmlContent += `
+          <tr>
+          <td style="padding: 1px;"></td>
+          <td style="padding: 1px;"></td>
+          <td style="padding: 1px;">${companions.name}</td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'>Convidado</span></td>
+          <td style="padding: 1px;">${companions.phone === null ? data.phone : companions.phone}</td>
+          <td style="padding: 1px;">${companions.bracelet}</td>
+          <td style="padding: 1px;">${hourMinute}</td>
+          <td style="padding: 1px;"><input type="checkbox" ${companions.isOut ? 'checked' : ''}></td>
+          </tr>`;
+        } else if (all === 2 && companions.isOut === false) {
+          htmlContent += `
+          <tr>
+          <td style="padding: 1px;"></td>
+          <td style="padding: 1px;"></td>
+          <td style="padding: 1px;">${companions.name}</td>
+          <td style="padding: 1px;"><span style='font-weight: bolder'>Convidado</span></td>
+          <td style="padding: 1px;">${companions.phone === null ? data.phone : companions.phone}</td>
+          <td style="padding: 1px;">${companions.bracelet}</td>
+          <td style="padding: 1px;">${hourMinute}</td>
+          <td style="padding: 1px;"><input type="checkbox" ${companions.isOut ? 'checked' : ''}></td>
+          </tr>`;
+        }
+      });
     });
 
-    console.log(htmlContent);
     htmlContent += `</tbody> </table></div>`;
     const element = document.createElement('div');
     element.innerHTML = htmlContent;
@@ -132,11 +131,11 @@ const PdfGenerator: React.FC = () => {
     doc.html(element, {
       callback: function (doc) {
         // Save the generated PDF
-        doc.save('table.pdf');
+        doc.save('lista-entradas.pdf');
       },
       x: 10,
       y: 10,
-      width: 490, // Maximum width of content on the page
+      width: 680, // Maximum width of content on the page
       windowWidth: element.scrollWidth, // Use the actual width of the content
     });
 
@@ -145,9 +144,24 @@ const PdfGenerator: React.FC = () => {
   };
 
   return (
-    <Button startIcon={<ReportsIcon />} onClick={generatePdf}>
-      Baixar Lista de Entradas do Dia
-    </Button>
+    <>
+      <Button
+        startIcon={<ReportsIcon />}
+        onClick={() => {
+          generatePdf(1);
+        }}
+      >
+        Lista de Entradas do Dia
+      </Button>
+      <Button
+        startIcon={<ReportsIcon />}
+        onClick={() => {
+          generatePdf(2);
+        }}
+      >
+        Lista de Saida do Dia
+      </Button>
+    </>
   );
 };
 

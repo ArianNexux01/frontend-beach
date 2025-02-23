@@ -11,6 +11,7 @@ const App = lazy(() => import('App'));
 const MainLayout = lazy(() => import('layouts/main-layout'));
 const LoginPage = lazy(() => import('pages/authentication/login'));
 const EntrancesPage = lazy(() => import('pages/entrances'));
+const ExitsPage = lazy(() => import('pages/exits'));
 const CustomersPage = lazy(() => import('pages/users'));
 const OrdersPage = lazy(() => import('pages/partners'));
 const BraceletPage = lazy(() => import('pages/bracelet'));
@@ -68,6 +69,14 @@ export const routes = [
             element: (
               <Protected>
                 <EntrancesPage />
+              </Protected>
+            ),
+          },
+          {
+            path: paths.exits,
+            element: (
+              <Protected allAvailable={true}>
+                <ExitsPage />
               </Protected>
             ),
           },

@@ -11,10 +11,8 @@ const Dashboard = () => {
     >
       <PageHeader>Dashboard</PageHeader>
 
-      <Grid container spacing={3} mt={1} mb={3}>
-        <Grid item xs={12} lg={12}>
-          <StatisticsCards />
-        </Grid>
+      <Grid item xs={12} lg={8}>
+        <StatisticsCards />
       </Grid>
     </Box>
   );

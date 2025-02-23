@@ -25,7 +25,7 @@ function CustomDataGridNoRows() {
         }}
       >
         <Typography variant="subtitle2" color="text.secondary">
-          No Data
+          Nenhum dado encontrado
         </Typography>
       </Box>
     </Stack>

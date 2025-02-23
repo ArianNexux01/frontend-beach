@@ -1,4 +1,4 @@
-import { Box, Button, Link, Stack, TextField } from '@mui/material';
+import { Box, Button, Grid, Stack, TextField } from '@mui/material';
 import { useState } from 'react';
 
 interface Props {
@@ -12,9 +12,8 @@ const ForgotPasswordForm = ({ getData }: Props) => {
         mt: { sm: 5, xs: 2.5 },
       }}
     >
-      <Stack spacing={3}>
+      <Grid spacing={3} flexDirection={'row'}>
         <TextField
-          fullWidth
           variant="outlined"
           id="email"
           type="Email"
@@ -23,21 +22,23 @@ const ForgotPasswordForm = ({ getData }: Props) => {
             setValueSearch(e.target.value);
           }}
         />
-      </Stack>
-      <Button
-        color="primary"
-        variant="contained"
-        size="large"
-        fullWidth
-        component={Link}
-        href="#!"
-        onClick={() => {
-          getData(valueSearch);
-        }}
-        sx={{ mt: 3, backgroundColor: '#c2b067' }}
-      >
-        Pesquisar
-      </Button>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            mt: 3,
+            backgroundColor: '#c2b067',
+            color: '#FFF',
+          }}
+          onClick={() => {
+            getData(valueSearch);
+          }}
+        >
+          Pesquisar
+        </Button>
+      </Grid>
       <Stack
         sx={{
           textAlign: 'center',
@@ -45,13 +46,6 @@ const ForgotPasswordForm = ({ getData }: Props) => {
           my: 3,
         }}
       />
-
-      <Stack
-        spacing={1.5}
-        sx={{
-          mt: 4,
-        }}
-      ></Stack>
     </Box>
   );
 };

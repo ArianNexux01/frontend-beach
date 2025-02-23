@@ -4,8 +4,8 @@ const environmentDev = {
 };
 
 const environmentProd = {
-  baseURL: 'http://192.168.1.5:3001/api',
-  fileURL: 'http://192.168.1.5:3001/',
+  baseURL: 'http://41.205.55.48:3001/api',
+  fileURL: 'http://41.205.55.48:3001/',
 };
 
 // eslint-disable-next-line no-constant-condition

@@ -8,9 +8,7 @@ input[data-autocompleted] {
   background-color: transparent !important;
 }
 
-.css-16g9c80-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled {
-  color: black !important;
-}
+
 input {
     font: inherit;
     letter-spacing: inherit;
@@ -42,22 +40,20 @@ input {
     padding-bottom: 12px;
 }
 
-.css-wnm90q-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled {
 
-  -webkit-text-fill-color: #5a5a5a !important;
-}
 
 .error-message {
   color: rgb(252, 113, 113);
   margin-top: 5px;
 }
 
-input:disabled {
-  border: 0.5px solid rgb(223, 220, 220);
-  color: rgb(143, 139, 139);
-
-}
-
 .swal-overlay {
   z-index: 100000000000 !important;
 }
+
+button, .css-nhb1r-MuiButtonBase-root-MuiButton-root {
+  color: white !important;
+  background-color: #c2b067 !important;
+  margin: 10px 5px 10px 5px !important;
+}
+

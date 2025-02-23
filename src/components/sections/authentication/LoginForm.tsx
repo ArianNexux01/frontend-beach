@@ -55,7 +55,7 @@ const LoginForm = () => {
           icon: 'warning',
           title: response.data.message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
       } else {
         if (localStorage.getItem('role') === 'RECEPTIONIST') {
@@ -78,7 +78,7 @@ const LoginForm = () => {
           icon: 'warning',
           title: message,
           showConfirmButton: false,
-          timer: 1500,
+          timer: 5500,
         });
     }
   };
@@ -126,7 +126,7 @@ const LoginForm = () => {
           size="large"
           type="submit"
           fullWidth
-          sx={{ my: 2, backgroundColor: '#c2b067' }}
+          sx={{ backgroundColor: '#c2b067', margin: '20px 0 0 0 !important' }}
         >
           Entrar
         </Button>

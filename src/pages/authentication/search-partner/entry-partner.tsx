@@ -25,6 +25,7 @@ type Companions = {
 type Inputs = {
   numberOfChildren: number;
   numberOfCompanions: number;
+  numberOfTeenages: number;
   partnerId: string;
 };
 const inputStyle = {
@@ -35,6 +36,7 @@ const EntryPartnerPage = () => {
   const [open, setOpen] = useState(false);
   const [companionsData, setCompanionsData] = useState<Companions[]>([]);
   const navigate = useNavigate();
+
   const {
     register,
     watch,
@@ -42,7 +44,8 @@ const EntryPartnerPage = () => {
     formState: { errors },
   } = useForm<Inputs>();
   const { id } = useParams();
-
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
   const handleClose = () => setOpen(false);
   const handleOpen = () => {
     setOpen(true);
@@ -68,7 +71,7 @@ const EntryPartnerPage = () => {
             icon: 'warning',
             title: 'Preencha os dados dos acompanhantes',
             showConfirmButton: false,
-            timer: 1500,
+            timer: 5500,
           });
           setOpen(true);
           return;
@@ -85,6 +88,7 @@ const EntryPartnerPage = () => {
           numberOfCompanions: Number(data.numberOfCompanions),
           companions: [...companionsWithPhone, ...companionsWithoutPhone],
           numberOfChildren: Number(data.numberOfChildren),
+          numberOfTeenages: Number(data.numberOfTeenages),
           partnerId: partner.id,
         });
 
@@ -94,7 +98,7 @@ const EntryPartnerPage = () => {
             icon: 'success',
             title: 'Entrada registada com sucesso!',
             showConfirmButton: false,
-            timer: 1500,
+            timer: 5500,
           });
           navigate('/dashboard/search-partner');
         }
@@ -106,7 +110,7 @@ const EntryPartnerPage = () => {
         icon: 'warning',
         title: error.response.data.message.message,
         showConfirmButton: false,
-        timer: 1500,
+        timer: 5500,
       });
     }
   };
@@ -173,7 +177,7 @@ const EntryPartnerPage = () => {
             id="email"
             type="number"
             defaultValue={0}
-            label="Nº de Acompanhates"
+            label="Nº de Acompanhantes"
             {...register('numberOfCompanions', { required: true })}
             InputProps={{
               endAdornment: (
@@ -202,6 +206,18 @@ const EntryPartnerPage = () => {
           />
           {errors.numberOfChildren && <span className="error-message">Campo obrigatório</span>}
         </Box>
+        <Box mt={2} mb={5} paddingRight={2} sx={{ width: '450px' }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            id="email"
+            type="number"
+            defaultValue={0}
+            label="Nº de Adolescentes"
+            {...register('numberOfTeenages', { required: true })}
+          />
+          {errors.numberOfTeenages && <span className="error-message">Campo obrigatório</span>}
+        </Box>
 
         <Box marginTop={5}>
           <Button type="submit" variant="outlined">
@@ -209,7 +225,7 @@ const EntryPartnerPage = () => {
           </Button>
           <Button
             onClick={() => {
-              navigate('/dashboard/search-partner');
+              navigate(`/dashboard/search-partner?searchText=${params.get('searchText')}`);
             }}
             style={{ marginLeft: 5 }}
             variant="outlined"

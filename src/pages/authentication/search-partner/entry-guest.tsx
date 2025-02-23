@@ -18,8 +18,9 @@ const EntryGuestPage = () => {
   type InputsGuest = {
     name?: string;
     phone: string;
-    numberOfChildren?: number;
     numberOfCompanions?: number;
+    numberOfChildren?: number;
+    numberOfTeenages?: number;
   };
 
   type Companions = {
@@ -32,44 +33,56 @@ const EntryGuestPage = () => {
     watch,
   } = useForm<InputsGuest>();
   const onSubmitGuest: SubmitHandler<InputsGuest> = async (data: InputsGuest) => {
-    if (
-      companionsData.filter((companion) => companion.name === '' || companion.phone === '').length >
-      0
-    ) {
-      await Swal.fire({
-        position: 'center',
-        icon: 'warning',
-        title: 'Preencha os dados dos acompanhantes',
-        showConfirmButton: false,
-        timer: 1500,
+    try {
+      if (
+        companionsData.filter((companion) => companion.name === '' || companion.phone === '')
+          .length > 0
+      ) {
+        await Swal.fire({
+          position: 'center',
+          icon: 'warning',
+          title: 'Preencha os dados dos acompanhantes',
+          showConfirmButton: false,
+          timer: 4500,
+        });
+        setOpen(true);
+        return;
+      }
+      let companionsWithoutPhone = companionsData.filter((companion) => companion.phone === '');
+      const companionsWithPhone = companionsData.filter((companion) => companion.phone !== '');
+      companionsWithoutPhone = companionsWithoutPhone.map((companion) => ({
+        ...companion,
+        phone: watch('phone'),
+      }));
+
+      const response = await api.post('/guest/entrance', {
+        name: data.name,
+        telephone: data.phone,
+        companions: [...companionsWithPhone, ...companionsWithoutPhone],
+        numberOfCompanions: Number(data.numberOfCompanions),
+        numberOfChildren: Number(data.numberOfChildren),
+        numberOfTeenages: Number(data.numberOfTeenages),
       });
-      setOpen(true);
-      return;
-    }
-    let companionsWithoutPhone = companionsData.filter((companion) => companion.phone === '');
-    const companionsWithPhone = companionsData.filter((companion) => companion.phone !== '');
-    companionsWithoutPhone = companionsWithoutPhone.map((companion) => ({
-      ...companion,
-      phone: watch('phone'),
-    }));
 
-    const response = await api.post('/guest/entrance', {
-      name: data.name,
-      telephone: data.phone,
-      companions: [...companionsWithPhone, ...companionsWithoutPhone],
-      numberOfCompanions: Number(data.numberOfCompanions),
-      numberOfChildren: Number(data.numberOfChildren),
-    });
-
-    if (response.status === 201) {
+      if (response.status === 201) {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Entrada registada com sucesso!',
+          showConfirmButton: false,
+          timer: 5500,
+        });
+        navigate('/dashboard/search-partner');
+      }
+    } catch (error) {
+      console.log(error);
       Swal.fire({
         position: 'center',
-        icon: 'success',
-        title: 'Entrada registada com sucesso!',
+        icon: 'warning',
+        title: error.response.data.message.message,
         showConfirmButton: false,
-        timer: 1500,
+        timer: 5500,
       });
-      navigate('/dashboard/search-partner');
     }
   };
 
@@ -133,7 +146,7 @@ const EntryGuestPage = () => {
             fullWidth
             variant="outlined"
             id="email"
-            type="text"
+            type="tel"
             label="Telefone"
             {...registerGuest('phone', { required: true })}
           />
@@ -145,7 +158,7 @@ const EntryGuestPage = () => {
             id="email"
             type="number"
             defaultValue={0}
-            label="Nº de Acompanhates"
+            label="Nº de Acompanhantes"
             {...registerGuest('numberOfCompanions', { required: true })}
             InputProps={{
               endAdornment: (
@@ -170,6 +183,17 @@ const EntryGuestPage = () => {
             defaultValue={0}
             label="Nº de Crianças"
             {...registerGuest('numberOfChildren', { required: true })}
+          />
+        </Box>
+        <Box mt={4} mb={4} sx={{ width: '450px' }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            id="email"
+            type="number"
+            defaultValue={0}
+            label="Nº de Adolescentes"
+            {...registerGuest('numberOfTeenages', { required: true })}
           />
         </Box>
 

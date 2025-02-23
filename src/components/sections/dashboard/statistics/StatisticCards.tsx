@@ -62,9 +62,17 @@ const StatisticsCards = forwardRef<ChildHandle>((_props, ref: Ref<ChildHandle>) 
         roles: ['ADMIN', 'OPERATOR', 'RECEPTIONIST'],
       },
       {
+        id: 4,
+        icon: CustomersIcon,
+        title: response.data.countTeenagesDay ?? 0,
+        subtitle: 'Adolescentes - Dia',
+        roles: ['ADMIN', 'OPERATOR', 'RECEPTIONIST'],
+      },
+      {
         id: 5,
         icon: CustomersIcon,
         title:
+          Number(response.data.countTeenagesDay) +
           Number(response.data.countChildrenDay) +
           Number(response.data.entrancesDay[0].total) +
           Number(response.data.countCompaniosDay) +
@@ -101,9 +109,17 @@ const StatisticsCards = forwardRef<ChildHandle>((_props, ref: Ref<ChildHandle>) 
         roles: ['ADMIN'],
       },
       {
+        id: 8,
+        icon: CustomersIcon,
+        title: response.data.countTeenagesMonth ?? 0,
+        subtitle: 'Adolescentes - Mês',
+        roles: ['ADMIN'],
+      },
+      {
         id: 13,
         icon: CustomersIcon,
         title:
+          Number(response.data.countTeenagesMonth) +
           Number(response.data.countChildrenMonth) +
           Number(response.data.entrancesMonth[0].total) +
           Number(response.data.countCompaniosMonth) +
@@ -140,9 +156,17 @@ const StatisticsCards = forwardRef<ChildHandle>((_props, ref: Ref<ChildHandle>) 
         roles: ['ADMIN'],
       },
       {
+        id: 12,
+        icon: CustomersIcon,
+        title: response.data.countTeenagesYear[0].total ?? 0,
+        subtitle: 'Adolescentes - Ano',
+        roles: ['ADMIN'],
+      },
+      {
         id: 13,
         icon: CustomersIcon,
         title:
+          Number(response.data.countTeenagesYear[0].total) +
           Number(response.data.countChildrenYear[0].total) +
           Number(response.data.entrancesYear[0].total) +
           Number(response.data.countCompaniosYear[0].total) +
